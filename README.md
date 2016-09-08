@@ -21,7 +21,7 @@ recomment that you install these via `pip install {package}`.
 
 In order to use the library, you can use the Jupyter Notebook(formerly iPython 
 Notebook) environment. To install Jupyter, you can follow the instructions on
-their website at <jupyter.org>.
+their website at <http://jupyter.org>.
 
 
 ## Build in tools ##
