@@ -69,9 +69,10 @@ def open_workbook():
 
 
 
-def import_column(students):
-        
-    sheet, header_row = open_workbook()
+def import_column(students,sheet=None,header_row=None,sciper=None):
+    
+    if sheet == None:
+        sheet, header_row = open_workbook()
     
     sample = Student(12324,"M","John Smith")
     
@@ -88,8 +89,9 @@ def import_column(students):
         else:
             print("Key invalid")
     
-    print("\nWhich column contains the :")
-    sciper = int(input("SCIPER : "))
+    print("\nWhich column contains :")
+    if (sciper == None):
+        sciper = int(input("SCIPER : "))
     column = int(input("your data : "))
     
     for i in range(header_row+1,sheet.nrows):
@@ -128,6 +130,14 @@ def import_check_headers():
             row[sex].value = "M"
         
         students.append(Student(row[sciper].value,row[sex].value,row[name].value))
+
+    while True:
+        answer = input("Input more keys from this file (y/n) ? : ")
+        if answer == "n":
+            break
+        elif answer == "y":
+            import_column(students,sheet,header_row,sciper)
+
     return students
 
 
