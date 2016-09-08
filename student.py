@@ -7,6 +7,10 @@ import xlwt
 
 import random
 
+# for quicksort
+import sys
+sys.setrecursionlimit(1000000)
+
 from math import floor
 
 
@@ -186,17 +190,56 @@ def write_to_file(student_list,filename):
     
     workbook.save(filename)
 
+def merge_students(first,second):
+    merged = []
+    for student in first:
+        merged.append(student)
+    for student in second:
+        merged.append(student)
+    return merged
 
+def sort_by_key(students,key):
+   
+    print("Sorting "+str(len(students))+" elements")
+    if len(students) == 1:
+        return students
+    if len(students) == 2:
+        if students[0].data[key] > students[1].data[key]:
+            return [students[1],students[0]]
+        else:
+            return students
 
-def merge_students(old_list,new_list):
+    lower = []
+    upper = []
+    middle = []
+    pivot = students[floor(len(students)/2)]
+    for student in students:
+        if student.data[key] < pivot.data[key]:
+            lower.append(student)
+        elif student.data[key] > pivot.data[key]:
+            upper.append(student)
+        else:
+            middle.append(student)
+
+    if len(lower) > 1:
+        lower = sort_by_key(lower,key)
+    if len(upper) > 1:
+        upper = sort_by_key(upper,key)
+
+    return merge_students(merge_students(lower,middle),upper)
+
+def merge_new_students(old_list,new_list):
     """
     This function will merge an old and new list of students, while
     keeping info from the old data.
     The merge is based in SCIPER numbering
     """
     merged_list = []
+    num_new_students = 0
+    num_updated_students = 0
     for new_student in new_list:
         existed = False
+        updated = False
         for old_student in old_list:
 
             # check student id by SCIPER
@@ -206,11 +249,13 @@ def merge_students(old_list,new_list):
                 # check if email has been updated, use new email
                 email = new_student.data['email']
                 if not (email == "none" or email == "mailto:" or email == ""):
+                    updated = True
                     old_student.data['email'] = new_student.data['email']
                 
                 # check if nationality has been updates, use new data
                 nat = new_student.data['nationality']
                 if not (nat == "none" or nat == ""):
+                    updated = True
                     old_student.data['nationality'] = new_student.data['nationality']
 
                 merged_list.append(old_student)
@@ -219,6 +264,14 @@ def merge_students(old_list,new_list):
         # if this is a new student, add to students  
         if existed == False:
             merged_list.append(new_student)
+            num_new_students += 1
+        if updated == True:
+            num_updated_students += 1
+
+    print("Merged "+str(len(old_list))+" and "+str(len(new_list))+" students")
+    print("New : "+str(num_new_students))
+    print("Updated : "+str(num_updated_students))
+
     return merged_list
 
 def find_updated_students(old_list,new_list):
@@ -261,7 +314,6 @@ def find_new_students(old_list,new_list):
             new_students.append(new_student)
     
     return new_students
-
 
 
 def assign_students(students,num_groups):
@@ -309,6 +361,17 @@ def get_students_by_group(students,group):
     return current
 
 
+
+def get_students_by_keys(students,query):
+    result = []
+    for student in students:
+        matched = 0
+        for key in query.keys():
+            if student.data[key] == query[key]:
+                matched += 1
+        if matched == len(query):
+            result.append(student)
+    return result
 
 def show_group_stats(students,group_num):
     group = get_students_by_group(students,group_num)
