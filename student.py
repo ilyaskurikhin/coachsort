@@ -126,7 +126,7 @@ def import_check_headers():
         row = sheet.row(i)
         
         # change empty SCIPER fields to 0
-        if (row[sciper].value == 'No Sciper'):
+        if (row[sciper].value == 'No Sciper' or row[sciper].value == ''):
             row[sciper].value = 0
         
         # infer sex from saluation
@@ -180,9 +180,11 @@ def write_to_file(student_list,filename):
         sheet.write(0,j,k)
 
     # write the data per student
-    for i,student in enumerate(student_list):
+    i = int(1)
+    for _,student in enumerate(student_list):
         for j,k in enumerate(student.data.keys()): 
             sheet.write(i,j,student.data[k])
+        i += 1
     
     workbook.save(filename)
 
@@ -223,6 +225,8 @@ def sort_by_key(students,key):
         upper = sort_by_key(upper,key)
 
     return merge_students(merge_students(lower,middle),upper)
+
+
 
 def merge_new_students(old_list,new_list):
     """
@@ -296,7 +300,14 @@ def find_updated_students(old_list,new_list):
 
     return updated_students
 
-
+def find_repeating(previous_year,current_year):
+    repeating = []
+    for student_1 in current_year:
+        for student_2 in previous_year:
+            if student_1.data['SCIPER'] == student_2.data['SCIPER']:
+                repeating.append(student_1)
+                break
+    return repeating
 
 def find_new_students(old_list,new_list):
     new_students = []
