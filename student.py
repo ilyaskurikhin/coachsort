@@ -30,8 +30,8 @@ class Student():
             'facebook_member' : False
         }
     
-    def show(self):
-        print(str(self.data['SCIPER'])+"; "+self.data['sex']+"; "+self.data['name'])
+    def __repr__(self):
+        return str(self.data['SCIPER'])+"; "+self.data['name']
 
 
 
@@ -58,15 +58,15 @@ def open_workbook():
     sheet = workbook.sheet_by_index(sheet_index)
     
     print("\nThese are the first 5 rows beginnings of the sheet : \n")
-    for i in range(0,5):
+    for i in range(5):
         line = "Line " + str(i) + " : "
-        for j in range(0,3):
+        for j in range(3):
             line += str(sheet.cell(i,j).value) + "; "
         print(line)
     row = int(input("Which row contains the column headers? : "))
     
     print("\nThese are the headers:")
-    for i in range(0,sheet.ncols):
+    for i in range(sheet.ncols):
         print(str(i) + " : " + str(sheet.cell(row,i).value))
     
     return sheet, row
@@ -79,12 +79,14 @@ def import_column(students,sheet=None,header_row=None,sciper=None):
         sheet, header_row = open_workbook()
     
     sample = Student(12324,"M","John Smith")
-    
+   
+    # list available keys
     print("\nYou can add one of the following keys:")
     for k in sample.data.keys():
         print(k)
     
-    
+   
+    # input key and check if valid
     valid_key = False
     while not valid_key:
         key = input("Which key do you want to add to ? : ")
@@ -153,14 +155,14 @@ def import_safe_file(filename):
 
     # get the column headers to use as keys
     keys = []
-    for i in range(0,sheet.ncols):
+    for i in range(sheet.ncols):
         keys.append(sheet.cell(0,i))
     
     # get the student data
     students = []
     for i in range(1,sheet.nrows):
         student = Student()
-        for j in range(0,sheet.ncols):
+        for j in range(sheet.ncols):
             key = sheet.cell(0,j).value
             student.data[key] = sheet.cell(i,j).value
         students.append(student)
@@ -174,19 +176,13 @@ def write_to_file(student_list,filename):
     sheet = workbook.add_sheet("Sheet1")
     
     # write the column headers
-    j = int(0)
-    for k in student_list[0].data.keys():
+    for j,k in enumerate(student_list[0].data.keys()):
         sheet.write(0,j,k)
-        j += 1
 
     # write the data per student
-    i = int(1)
-    for student in student_list:
-        j = int(0)
-        for k in student.data.keys(): 
+    for i,student in enumerate(student_list):
+        for j,k in enumerate(student.data.keys()): 
             sheet.write(i,j,student.data[k])
-            j += 1
-        i += 1
     
     workbook.save(filename)
 
