@@ -160,3 +160,85 @@ def plot_nationalities_by_year(classes,title):
     plt.xticks(range(len(years)),years)
     plt.title(title)
     plt.show()
+
+
+def plot_nat_percentage_by_year(classes,title):
+    
+    # create array of available years so that they are in order
+    years = []
+    for year in classes.keys():
+        years.append(year)
+    years.sort()
+
+    # get list of nationalities per year
+    nationality_years = {}
+    for year in years:
+        nationality_years[year] = []
+        for student in classes[year]:
+            nationality_years[year].append(student.data['nationality'])
+
+
+    # count nationailty per year
+    count_per_year = {}
+    for year in years:
+        count_per_year[year] = {}
+        for nat in nationality_years[year]:
+            if nat in count_per_year[year].keys():
+                count_per_year[year][nat] += 1
+            else:
+                count_per_year[year][nat] = 1
+
+
+    # convert to country based so that we have one line per country
+    graph_data = {}
+    for year in years:
+        for nat in count_per_year[year].keys():
+            if nat in graph_data.keys():
+                graph_data[nat][year] = count_per_year[year][nat] / len(classes[year]) 
+            else:
+                graph_data[nat] = {}
+                graph_data[nat][year] = count_per_year[year][nat] / len(classes[year])
+
+
+    # initialize 'autre' category
+    graph_data['autre'] = {}
+    for year in years:
+        graph_data['autre'][year] = 0
+
+
+    # fill empty data with zeroes
+    to_delete = []
+    for nat in graph_data.keys():
+        nat_sum = 0
+        for year in years:
+            if year not in graph_data[nat].keys():
+                graph_data[nat][year] = 0
+            else:
+                nat_sum += graph_data[nat][year]
+
+        # move nat with less than 2 average to 'autre' category
+        if nat_sum < 0.03*len(years):
+            for year in years:
+                graph_data['autre'][year] += graph_data[nat][year]
+                graph_data[nat][year] = 0
+                to_delete.append(nat)
+
+    # remove excess graphs accounted for by 'autre'
+    for nat in to_delete:
+        if nat in graph_data.keys():
+            del graph_data[nat]
+
+
+    fig, ax = plt.subplots()
+
+    for nat in graph_data.keys():
+        values = []
+        for year in years:
+            values.append(graph_data[nat][year])
+        ax.plot(values,label=str(nat))
+
+    legend = ax.legend(bbox_to_anchor=(1.4,1.0))
+    
+    plt.xticks(range(len(years)),years)
+    plt.title(title)
+    plt.show()
