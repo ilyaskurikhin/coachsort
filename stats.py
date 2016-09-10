@@ -156,6 +156,7 @@ def plot_nationalities_by_year(classes,title):
         ax.plot(values,label=str(nat))
 
     legend = ax.legend(bbox_to_anchor=(1.4,1.0))
-
+    
+    plt.xticks(range(len(years)),years)
     plt.title(title)
     plt.show()
