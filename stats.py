@@ -217,7 +217,7 @@ def plot_nat_percentage_by_year(classes,title):
                 nat_sum += graph_data[nat][year]
 
         # move nat with less than 2 average to 'autre' category
-        if nat_sum < 0.03*len(years):
+        if nat_sum < 0.01*len(years):
             for year in years:
                 graph_data['autre'][year] += graph_data[nat][year]
                 graph_data[nat][year] = 0
